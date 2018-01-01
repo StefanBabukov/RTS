@@ -1,24 +1,82 @@
 <!DOCTYPE html>
 <html>
 <body>
-
-
-<svg width="800" height="800">
-   <circle cx="50" cy="50" r="40" stroke="blue" stroke-width="4" fill="red" onclick = "Select()" id="player1" ></circle>
-   
+<svg id="canvas" width="1200" height="1200"oncontextmenu="Move(evt)"onclick="deSelect()">
+	<circle id="player1" cx="300" cy="300" r="40" stroke="blue" stroke-width="4" fill="red" onclick = "Select()">
+	</circle>
 </svg> 
-<script>  function Select(){
-console.log("hello")
- document.getElementById("player1").style.stroke ="green" ;
- document.getElementById("player1").style.cx="400";
- document.getElementById("player1").style.cy="400";
-} 
+<script>
+document.onkeypress=keyboard;
+var player1Selected = false;
+var selectedColour = "green";
+var unselectedColour = "blue";
+
+function deSelect(){
+	console.log("deselect")
+	if (!player1Selected) {
+		document.getElementById("player1").style.stroke = unselectedColour;
+	}
+	player1Selected = false
+}
+
+function Select() {
+ player1Selected = true;
+ console.log("select")
+ document.getElementById("player1").style.stroke = selectedColour;
+}
+
 document.oncontextmenu = function() {
     return false;
 }
-/*function Move(){
-document.getElementById("player1").style.cx= 
-}*/
+
+function createAnimation(attribute, playerID, duration, from, to) {
+        var animation = document.createElementNS("http://www.w3.org/2000/svg", "animate")
+        animation.setAttribute("attributeType", "XML")
+        animation.setAttribute("attributeName", attribute)
+        animation.setAttribute("dur", duration)
+        animation.setAttribute("to", to)
+        animation.setAttribute("from", from)
+        animation.setAttribute("fill", "freeze")
+        animationID = playerID + "animation" + attribute
+        animation.setAttribute("id", animationID)
+        player = document.getElementById(playerID)
+        previous_animation = document.getElementById(animationID)
+        if (previous_animation != null) {
+          player.removeChild(previous_animation)
+        }
+        player.appendChild(animation)
+      }
+function Move(evt) {
+	if(document.getElementById("player1").style.stroke==selectedColour){
+        console.log(evt.clientX);
+        console.log(evt.clientY);
+		var circle = document.getElementById("player1");
+		var fromx = circle.cx.animVal.value;
+		var fromy = circle.cy.animVal.value;
+		var tox = evt.clientX;
+		var toy = evt.clientY;
+		var duration = calcTime(tox - fromx, toy - fromy);
+        createAnimation("cx", "player1", duration, fromx, tox);
+        createAnimation("cy", "player1", duration, fromy, toy);
+        document.getElementById("canvas").setCurrentTime(0);
+      }
+	}
+function calcTime(x,y){
+		var distance = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+		var time = distance / 100.0;
+		return time;
+}
+
+function keyboard(e){
+    console.log(e.key);
+	var key = e.key;
+	switch (key){
+		case 'a':attack();
+	}
+    }
+function attack(){
+	 console.log("attack");
+}
 </script> 
 </body>
 </html>
